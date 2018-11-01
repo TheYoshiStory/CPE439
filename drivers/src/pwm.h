@@ -17,7 +17,7 @@ typedef enum
 
 typedef enum
 {
-	PWM_DUTY_CYCLE_0	= (PWM_PERIOD_NS * 0) / 100,
+	PWM_DUTY_CYCLE_0	= (PWM_PERIOD_NS * 100) / 100,
 	PWM_DUTY_CYCLE_5	= (PWM_PERIOD_NS * 5) / 100,
 	PWM_DUTY_CYCLE_10	= (PWM_PERIOD_NS * 10) / 100,
 	PWM_DUTY_CYCLE_15	= (PWM_PERIOD_NS * 15) / 100,
@@ -37,7 +37,7 @@ typedef enum
 	PWM_DUTY_CYCLE_85	= (PWM_PERIOD_NS * 85) / 100,
 	PWM_DUTY_CYCLE_90	= (PWM_PERIOD_NS * 90) / 100,
 	PWM_DUTY_CYCLE_95	= (PWM_PERIOD_NS * 95) / 100,
-	PWM_DUTY_CYCLE_100	= (PWM_PERIOD_NS * 100) / 100,
+	PWM_DUTY_CYCLE_100	= (PWM_PERIOD_NS * 0) / 100,
 } pwm_duty_cycle_t;
 
 void pwm_init();
