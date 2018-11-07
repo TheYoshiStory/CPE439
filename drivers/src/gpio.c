@@ -1,30 +1,36 @@
 #include "gpio.h"
 
-// initializes GPIO driver
-void gpio_init(XGpio *gpio)
+// initialize GPIO driver
+void gpio_init(XGpio *gpio, uint32_t device_id)
 {
 	XGpio_Config *config;
 
-	// look up configuration
-	config = XGpio_LookupConfig(XPAR_AXI_GPIO_0_DEVICE_ID);
+	config = XGpio_LookupConfig(device_id);
 	XGpio_CfgInitialize(gpio, config, config->BaseAddress);
 
-	// initialize input channel
-	XGpio_SetDataDirection(gpio, GPIO_INPUT, 0xFFFFFFFF);
+	switch(device_id)
+	{
+		case XPAR_AXI_GPIO_0_DEVICE_ID:
+			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
+			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_2, 0x00000000);
+			XGpio_DiscreteWrite(gpio, GPIO_CHANNEL_2, 0x00000000);
+			break;
 
-	// initialize output channel
-	XGpio_SetDataDirection(gpio, GPIO_OUTPUT, 0x00000000);
-	XGpio_DiscreteWrite(gpio, GPIO_OUTPUT, 0x00000000);
+		case XPAR_AXI_GPIO_1_DEVICE_ID:
+			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
+			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_2, 0xFFFFFFFF);
+			break;
+	}
 }
 
-// reads data from GPIO input channel
-uint32_t gpio_read(XGpio *gpio)
+// read data from GPIO channel
+uint32_t gpio_read(XGpio *gpio, gpio_channel_t ch)
 {
-	return(XGpio_DiscreteRead(gpio, GPIO_INPUT));
+	return(XGpio_DiscreteRead(gpio, ch));
 }
 
-// writes data to GPIO output channel
-void gpio_write(XGpio *gpio, uint32_t data)
+// write data to GPIO channel
+void gpio_write(XGpio *gpio, gpio_channel_t ch, uint32_t data)
 {
-	XGpio_DiscreteWrite(gpio, GPIO_OUTPUT, data);
+	XGpio_DiscreteWrite(gpio, ch, data);
 }

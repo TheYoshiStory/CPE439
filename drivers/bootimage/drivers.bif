@@ -1,0 +1,7 @@
+//arch = zynq; split = false; format = BIN
+the_ROM_image:
+{
+	[bootloader]C:\Users\Ayusman\Documents\Vivado\CPE439\final_project\final_project.sdk\FSBL\Debug\FSBL.elf
+	C:\Users\Ayusman\Documents\Vivado\CPE439\final_project\final_project.sdk\design_1_wrapper_hw_platform_0\design_1_wrapper.bit
+	C:\Users\Ayusman\Documents\Vivado\CPE439\final_project\final_project.git\CPE439\drivers\Debug\drivers.elf
+}
