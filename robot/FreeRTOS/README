@@ -1,0 +1,9 @@
+This project includes all of the code for running FreeRTOS v8.2.3 on the
+Digilent ZYBO board when compiling with the Xilinx SDK.
+
+NOTES:
+heap_4.c is one of 5 heap implementations included in FreeRTOS.  The others
+provide various features and can be found by downloading FreeRTOS v8.2.3 from
+the project website.  See http://www.freertos.org/a00111.html for more details.
+If you are not sure what any of this means do not worry; know that the project
+is configured such that all FreeRTOS features will work as expected by default.
