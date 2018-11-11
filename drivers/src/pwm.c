@@ -1,6 +1,6 @@
 #include "pwm.h"
 
-// initializes PWM driver
+// initialize PWM driver
 void pwm_init()
 {
 	// setup control registers for PWM0
@@ -30,7 +30,7 @@ void pwm_init()
 	Xil_Out32(PWM_CHANNEL_3 + 0x14, (PWM_DUTY_CYCLE_50 / CLK_PERIOD_NS) - 2);
 }
 
-// sets the duty cycle of the given PWM channel
+// set the duty cycle of the given PWM channel
 void pwm_set(pwm_addr_t pwm, pwm_duty_cycle_t duty_cycle)
 {
 	Xil_Out32(pwm + 0x14, (duty_cycle / CLK_PERIOD_NS) - 2);
