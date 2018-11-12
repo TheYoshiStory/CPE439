@@ -39,6 +39,16 @@ typedef enum
 
 void motor_init();
 
+void motor_off();
+
+void motor_forward(motor_speed_t speed);
+
+void motor_backward(motor_speed_t speed);
+
+void motor_right(motor_speed_t speed);
+
+void motor_left(motor_speed_t speed);
+
 void motor_control(motor_direction_t direction, motor_speed_t speed, uint32_t distance);
 
 #endif
