@@ -1,16 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#include "gpio.h"
 #include "pwm.h"
-
-typedef enum
-{
-	MOTOR_FORWARD = 0x66,
-	MOTOR_BACKWARD = 0x62,
-	MOTOR_RIGHT = 0x72,
-	MOTOR_LEFT = 0x6C,
-} motor_direction_t;
 
 typedef enum
 {
@@ -48,7 +39,5 @@ void motor_backward(motor_speed_t speed);
 void motor_right(motor_speed_t speed);
 
 void motor_left(motor_speed_t speed);
-
-void motor_control(motor_direction_t direction, motor_speed_t speed, uint32_t distance);
 
 #endif

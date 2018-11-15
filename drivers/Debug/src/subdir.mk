@@ -10,6 +10,7 @@ C_SRCS += \
 ../src/gpio.c \
 ../src/main.c \
 ../src/motor.c \
+../src/odometer.c \
 ../src/platform.c \
 ../src/pwm.c 
 
@@ -17,6 +18,7 @@ OBJS += \
 ./src/gpio.o \
 ./src/main.o \
 ./src/motor.o \
+./src/odometer.o \
 ./src/platform.o \
 ./src/pwm.o 
 
@@ -24,6 +26,7 @@ C_DEPS += \
 ./src/gpio.d \
 ./src/main.d \
 ./src/motor.d \
+./src/odometer.d \
 ./src/platform.d \
 ./src/pwm.d 
 

@@ -14,7 +14,8 @@ typedef enum
 {
 	GPIO_MASK_SW 	= 0x0000000F,
 	GPIO_MASK_LED	= 0x0000000F,
-	GPIO_MASK_TACH	= 0xFFFFFFFF,
+	GPIO_MASK_OD	= 0xFFFFFFFF,
+	GPIO_MASK_RF	= 0xFFFFFFFF,
 } gpio_mask_t;
 
 typedef enum

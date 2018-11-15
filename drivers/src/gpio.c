@@ -20,6 +20,10 @@ void gpio_init(XGpio *gpio, uint32_t device_id)
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_2, 0xFFFFFFFF);
 			break;
+
+		case XPAR_AXI_GPIO_2_DEVICE_ID:
+			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
+			break;
 	}
 }
 
