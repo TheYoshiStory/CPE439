@@ -13,10 +13,10 @@ import javax.swing.JFrame;
 
 public class RobotClient
 {
-   private static enum State{IDLE, RUNNING, EXIT, STOP, FORWARD, BACKWARD, RIGHT, LEFT, DISTANCE, SCAN};
+   private static enum State{IDLE, RUNNING, EXIT, STOP, FORWARD, BACKWARD, RIGHT, LEFT};
    private static final int PORT = 23;
    private static final int SIZE = 500;
-   
+
    public static void main(String[] args)
    {
       Window window;
@@ -42,8 +42,7 @@ public class RobotClient
       private Socket socket;
       private PrintWriter output;
       private Picture gui;
-      private HashMap<Integer, State> events;
-      private HashMap<State, String> commands;
+      private HashMap<Integer, Boolean> event;
 
       public Window(String ip)
       {
@@ -61,22 +60,12 @@ public class RobotClient
          }
 
          this.gui = new Picture();
-         this.events = new HashMap<Integer, State>();
-         this.commands = new HashMap<State, String>();
+         this.event = new HashMap<Integer, Boolean>();
 
-         this.events.put(KeyEvent.VK_UP, State.FORWARD);
-         this.events.put(KeyEvent.VK_DOWN, State.BACKWARD);
-         this.events.put(KeyEvent.VK_RIGHT, State.RIGHT);
-         this.events.put(KeyEvent.VK_LEFT, State.LEFT);
-         this.events.put(KeyEvent.VK_ESCAPE, State.EXIT);
-
-         this.commands.put(State.STOP, "robot-stop");
-         this.commands.put(State.FORWARD, "robot-forward 25");
-         this.commands.put(State.BACKWARD, "robot-backward 25");
-         this.commands.put(State.RIGHT, "robot-right 25");
-         this.commands.put(State.LEFT, "robot-left 25");
-         this.commands.put(State.DISTANCE, "robot-distance");
-         this.commands.put(State.SCAN, "robot-scan");
+         this.event.put(KeyEvent.VK_UP, false);
+         this.event.put(KeyEvent.VK_DOWN, false);
+         this.event.put(KeyEvent.VK_RIGHT, false);
+         this.event.put(KeyEvent.VK_LEFT, false);
 
          addKeyListener(this);
          setFocusable(true);
@@ -85,46 +74,101 @@ public class RobotClient
       
       public void keyPressed(KeyEvent input)
       {
-         if((this.gui.state == State.IDLE) && (this.events.containsKey(input.getKeyCode())))
+         int[] speed = {0, 0};
+
+         if(input.getKeyCode() == KeyEvent.VK_ESCAPE)
          {
-            this.gui.state = this.events.get(input.getKeyCode());
-
-            switch(this.gui.state)
+            this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+            
+            try
             {
-               case EXIT:
-                  try
-                  {
-                     System.out.println("closing socket connection...");
-                     this.socket.close();
-                     this.output.close();
-                     System.out.println("socket connection closed");
-                  }
-                  catch(IOException e)
-                  {
-                     System.err.println("ERROR: failed to close socket connection");
-                     System.exit(1);
-                  }
-               
-                  System.exit(0);
-
-               default:
-                  this.output.println(this.commands.get(this.gui.state));
+               System.out.println("closing socket connection...");
+               this.socket.close();
+               this.output.close();
+               System.out.println("socket connection closed");
+            }
+            catch(IOException e)
+            {
+               System.err.println("ERROR: failed to close socket connection");
+               System.exit(1);
             }
             
-            repaint();
+            System.exit(0);
          }
-         
+         else if(this.event.containsKey(input.getKeyCode()))
+         {
+            if(!this.event.get(input.getKeyCode()))
+            {
+               this.event.put(input.getKeyCode(), true);
+
+               if(this.event.get(KeyEvent.VK_UP))
+               {
+                  speed[0] += 50;
+                  speed[1] += 50;
+               }
+               
+               if(this.event.get(KeyEvent.VK_DOWN))
+               {
+                  speed[0] -= 50;
+                  speed[1] -= 50;
+               }
+               
+               if(this.event.get(KeyEvent.VK_RIGHT))
+               {
+                  speed[0] += 25;
+                  speed[1] -= 25;
+               }
+               
+               if(this.event.get(KeyEvent.VK_LEFT))
+               {
+                  speed[0] -= 25;
+                  speed[1] += 25;
+               }
+               
+               this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+               repaint();
+            }
+         }
       }
    
       public void keyReleased(KeyEvent input)
       {
-         if(this.gui.state == State.RUNNING)
-         {
-            this.gui.state = State.STOP;
-            this.output.println(this.commands.get(this.gui.state));
-         }
+         int[] speed = {0, 0};
          
-         repaint();
+         if(this.event.containsKey(input.getKeyCode()))
+         {
+            if(this.event.get(input.getKeyCode()))
+            {
+               this.event.put(input.getKeyCode(), false);
+
+               if(this.event.get(KeyEvent.VK_UP))
+               {
+                  speed[0] += 50;
+                  speed[1] += 50;
+               }
+               
+               if(this.event.get(KeyEvent.VK_DOWN))
+               {
+                  speed[0] -= 50;
+                  speed[1] -= 50;
+               }
+               
+               if(this.event.get(KeyEvent.VK_RIGHT))
+               {
+                  speed[0] += 25;
+                  speed[1] -= 25;
+               }
+               
+               if(this.event.get(KeyEvent.VK_LEFT))
+               {
+                  speed[0] -= 25;
+                  speed[1] += 25;
+               }
+               
+               this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+               repaint();
+            }
+         }
       }
 
       public void keyTyped(KeyEvent input){}
