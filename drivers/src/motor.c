@@ -4,50 +4,49 @@
 void motor_init()
 {
 	pwm_init();
-	motor_off();
+	motor_control(0, 0);
 }
 
-// stop motors
-void motor_off()
+// control motors
+void motor_control(int8_t left, int8_t right)
 {
-	pwm_set(PWM_CHANNEL_0, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_1, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_2, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_3, PWM_DUTY_CYCLE_100);
-}
+	if(right > MAX_SPEED)
+	{
+		right = MAX_SPEED;
+	}
+	else if(right < (MAX_SPEED * -1))
+	{
+		right = MAX_SPEED * -1;
+	}
 
-// run motors forward
-void motor_forward(motor_speed_t speed)
-{
-	pwm_set(PWM_CHANNEL_0, speed);
-	pwm_set(PWM_CHANNEL_1, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_2, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_3, speed);
-}
+	if(left > MAX_SPEED)
+	{
+		left = MAX_SPEED;
+	}
+	else if(left < (MAX_SPEED * -1))
+	{
+		left = MAX_SPEED * -1;
+	}
 
-// run motors backward
-void motor_backward(motor_speed_t speed)
-{
-	pwm_set(PWM_CHANNEL_0, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_1, speed);
-	pwm_set(PWM_CHANNEL_2, speed);
-	pwm_set(PWM_CHANNEL_3, PWM_DUTY_CYCLE_100);
-}
+	if(right > MIN_SPEED)
+	{
+		pwm_set(PWM_CHANNEL_0, MAX_DUTY_CYCLE - right);
+		pwm_set(PWM_CHANNEL_1, MAX_DUTY_CYCLE);
+	}
+	else
+	{
+		pwm_set(PWM_CHANNEL_0, MAX_DUTY_CYCLE);
+		pwm_set(PWM_CHANNEL_1, MAX_DUTY_CYCLE + right);
+	}
 
-// turn motors right
-void motor_right(motor_speed_t speed)
-{
-	pwm_set(PWM_CHANNEL_0, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_1, speed);
-	pwm_set(PWM_CHANNEL_2, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_3, speed);
-}
-
-// turn motors left
-void motor_left(motor_speed_t speed)
-{
-	pwm_set(PWM_CHANNEL_0, speed);
-	pwm_set(PWM_CHANNEL_1, PWM_DUTY_CYCLE_100);
-	pwm_set(PWM_CHANNEL_2, speed);
-	pwm_set(PWM_CHANNEL_3, PWM_DUTY_CYCLE_100);
+	if(left > MIN_SPEED)
+	{
+		pwm_set(PWM_CHANNEL_2, MAX_DUTY_CYCLE);
+		pwm_set(PWM_CHANNEL_3,  MAX_DUTY_CYCLE - left);
+	}
+	else
+	{
+		pwm_set(PWM_CHANNEL_2, MAX_DUTY_CYCLE + left);
+		pwm_set(PWM_CHANNEL_3, MAX_DUTY_CYCLE);
+	}
 }

@@ -1,27 +1,27 @@
 #include "gpio.h"
 
 // initialize GPIO driver
-void gpio_init(XGpio *gpio, uint32_t device_id)
+void gpio_init(XGpio *gpio, gpio_device_t id)
 {
 	XGpio_Config *config;
 
-	config = XGpio_LookupConfig(device_id);
+	config = XGpio_LookupConfig(id);
 	XGpio_CfgInitialize(gpio, config, config->BaseAddress);
 
-	switch(device_id)
+	switch(id)
 	{
-		case XPAR_AXI_GPIO_0_DEVICE_ID:
+		case GPIO_DEVICE_O:
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_2, 0x00000000);
 			XGpio_DiscreteWrite(gpio, GPIO_CHANNEL_2, 0x00000000);
 			break;
 
-		case XPAR_AXI_GPIO_1_DEVICE_ID:
+		case GPIO_DEVICE_1:
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_2, 0xFFFFFFFF);
 			break;
 
-		case XPAR_AXI_GPIO_2_DEVICE_ID:
+		case GPIO_DEVICE_2:
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
 			break;
 	}

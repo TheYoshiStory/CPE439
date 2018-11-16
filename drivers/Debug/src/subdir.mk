@@ -12,7 +12,8 @@ C_SRCS += \
 ../src/motor.c \
 ../src/odometer.c \
 ../src/platform.c \
-../src/pwm.c 
+../src/pwm.c \
+../src/rangefinder.c 
 
 OBJS += \
 ./src/gpio.o \
@@ -20,7 +21,8 @@ OBJS += \
 ./src/motor.o \
 ./src/odometer.o \
 ./src/platform.o \
-./src/pwm.o 
+./src/pwm.o \
+./src/rangefinder.o 
 
 C_DEPS += \
 ./src/gpio.d \
@@ -28,7 +30,8 @@ C_DEPS += \
 ./src/motor.d \
 ./src/odometer.d \
 ./src/platform.d \
-./src/pwm.d 
+./src/pwm.d \
+./src/rangefinder.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

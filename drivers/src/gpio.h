@@ -12,29 +12,12 @@ typedef enum
 
 typedef enum
 {
-	GPIO_MASK_SW 	= 0x0000000F,
-	GPIO_MASK_LED	= 0x0000000F,
-	GPIO_MASK_OD	= 0xFFFFFFFF,
-	GPIO_MASK_RF	= 0xFFFFFFFF,
-} gpio_mask_t;
+	GPIO_DEVICE_O = XPAR_AXI_GPIO_0_DEVICE_ID,
+	GPIO_DEVICE_1 = XPAR_AXI_GPIO_1_DEVICE_ID,
+	GPIO_DEVICE_2 = XPAR_AXI_GPIO_2_DEVICE_ID,
+} gpio_device_t;
 
-typedef enum
-{
-	GPIO_SW0 = 0x00000001,
-	GPIO_SW1 = 0x00000002,
-	GPIO_SW2 = 0x00000004,
-	GPIO_SW3 = 0x00000008,
-} gpio_sw_t;
-
-typedef enum
-{
-	GPIO_LED0 = 0x00000001,
-	GPIO_LED1 = 0x00000002,
-	GPIO_LED2 = 0x00000004,
-	GPIO_LED3 = 0x00000008,
-} gpio_led_t;
-
-void gpio_init(XGpio *gpio, uint32_t device_id);
+void gpio_init(XGpio *gpio, gpio_device_t id);
 
 uint32_t gpio_read(XGpio *gpio, gpio_channel_t ch);
 

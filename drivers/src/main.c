@@ -4,22 +4,29 @@
 #include "sleep.h"
 #include "motor.h"
 #include "odometer.h"
-#include "gpio.h"
+#include "rangefinder.h"
 
 int main()
 {
-	XGpio rangefinder;
+	uint32_t data[2];
 
 	init_platform();
 
 	motor_init();
 	odometer_init();
-	gpio_init(&rangefinder, XPAR_AXI_GPIO_2_DEVICE_ID);
+	rangefinder_init();
+
+	motor_control(MIN_SPEED, MIN_SPEED);
 
 	while(1)
 	{
-		printf("RANGEFINDER: %lu\n", gpio_read(&rangefinder, GPIO_CHANNEL_1) & GPIO_MASK_RF);
-		usleep(100);
+		data[0] = odometer_read();
+		data[1] = rangefinder_read();
+
+		printf("ODOMETER: %lumm\n", data[0]);
+		printf("RANGEFINDER: %lumm\n\n", data[1]);
+
+		sleep(1);
 	}
 
 	cleanup_platform();
