@@ -13,9 +13,12 @@ import javax.swing.JFrame;
 
 public class RobotClient
 {
-   private static enum State{IDLE, RUNNING, EXIT, STOP, FORWARD, BACKWARD, RIGHT, LEFT};
    private static final int PORT = 23;
    private static final int SIZE = 500;
+   private static final int HIGH_SPEED = 75;
+   private static final int MID_SPEED = 50;
+   private static final int LOW_SPEED = 25;
+   private static final int STOP_SPEED = 0;
 
    public static void main(String[] args)
    {
@@ -41,12 +44,11 @@ public class RobotClient
    {
       private Socket socket;
       private PrintWriter output;
-      private Picture gui;
       private HashMap<Integer, Boolean> event;
+      private Picture gui;
 
       public Window(String ip)
       {
-         /*
          try
          {
             System.out.println("connecting to address " + ip + " on port " + PORT + "...");
@@ -59,31 +61,94 @@ public class RobotClient
             System.err.println("ERROR: failed to open socket connection");
             System.exit(1);
          }
-         */
 
-         this.gui = new Picture();
          this.event = new HashMap<Integer, Boolean>();
-
          this.event.put(KeyEvent.VK_UP, false);
          this.event.put(KeyEvent.VK_DOWN, false);
          this.event.put(KeyEvent.VK_RIGHT, false);
          this.event.put(KeyEvent.VK_LEFT, false);
+         
+         this.gui = new Picture(event);
 
          addKeyListener(this);
          setFocusable(true);
          setFocusTraversalKeysEnabled(false);
       }
+
+      public void sendCommand()
+      {
+         boolean up;
+         boolean down;
+         boolean right;
+         boolean left;
+         int[] speed;
+         
+         up = this.event.get(KeyEvent.VK_UP);
+         down = this.event.get(KeyEvent.VK_DOWN);
+         right = this.event.get(KeyEvent.VK_RIGHT);
+         left = this.event.get(KeyEvent.VK_LEFT);
+         speed = new int[2];
+
+         if((up && !down && !right && !left) || (up && !down && right && left))
+         {
+            speed[0] = MID_SPEED;
+            speed[1] = MID_SPEED;
+         }
+         else if(up && !down && right && !left)
+         {
+            speed[0] = MID_SPEED;
+            speed[1] = LOW_SPEED;
+         }
+         else if((!up && !down && right && !left) || (up && down && right && !left))
+         {
+            speed[0] = MID_SPEED;
+            speed[1] = MID_SPEED * -1;
+         }
+         else if(!up && down && right && !left)
+         {
+            speed[0] = MID_SPEED * -1;
+            speed[1] = LOW_SPEED * -1;
+         }
+         else if((!up && down && !right && !left) || (!up && down && right && left))
+         {
+            speed[0] = MID_SPEED * -1;
+            speed[1] = MID_SPEED * -1;
+         }
+         else if(!up && down && !right && left)
+         {
+            speed[0] = LOW_SPEED * -1;
+            speed[1] = MID_SPEED * -1;
+         }
+         else if((!up && !down && !right && left) || (up && down && !right && left))
+         {
+            speed[0] = MID_SPEED * -1;
+            speed[1] = MID_SPEED;
+         }
+         else if(up && !down && !right && left)
+         {
+            speed[0] = LOW_SPEED;
+            speed[1] = MID_SPEED;
+         }
+         else
+         {
+            speed[0] = STOP_SPEED;
+            speed[1] = STOP_SPEED;
+         }
+         
+         this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+         repaint();
+      }
       
       public void keyPressed(KeyEvent input)
       {
-         int[] speed = {0, 0};
-
          if(input.getKeyCode() == KeyEvent.VK_ESCAPE)
          {
-            //this.output.println("robot-control " + speed[0] + "  " + speed[1]);
-            System.out.println("robot-control " + speed[0] + "  " + speed[1]);
+            this.event.put(KeyEvent.VK_UP, false);
+            this.event.put(KeyEvent.VK_DOWN, false);
+            this.event.put(KeyEvent.VK_RIGHT, false);
+            this.event.put(KeyEvent.VK_LEFT, false);
+            sendCommand();
             
-            /*
             try
             {
                System.out.println("closing socket connection...");
@@ -96,7 +161,6 @@ public class RobotClient
                System.err.println("ERROR: failed to close socket connection");
                System.exit(1);
             }
-            */
             
             System.exit(0);
          }
@@ -105,75 +169,19 @@ public class RobotClient
             if(!this.event.get(input.getKeyCode()))
             {
                this.event.put(input.getKeyCode(), true);
-
-               if(this.event.get(KeyEvent.VK_UP))
-               {
-                  speed[0] += 50;
-                  speed[1] += 50;
-               }
-               
-               if(this.event.get(KeyEvent.VK_DOWN))
-               {
-                  speed[0] -= 50;
-                  speed[1] -= 50;
-               }
-               
-               if(this.event.get(KeyEvent.VK_RIGHT))
-               {
-                  speed[0] += 25;
-                  speed[1] -= 25;
-               }
-               
-               if(this.event.get(KeyEvent.VK_LEFT))
-               {
-                  speed[0] -= 25;
-                  speed[1] += 25;
-               }
-               
-               //this.output.println("robot-control " + speed[0] + "  " + speed[1]);
-               System.out.println("robot-control " + speed[0] + "  " + speed[1]);
-               repaint();
+               sendCommand();
             }
          }
       }
    
       public void keyReleased(KeyEvent input)
       {
-         int[] speed = {0, 0};
-         
          if(this.event.containsKey(input.getKeyCode()))
          {
             if(this.event.get(input.getKeyCode()))
             {
                this.event.put(input.getKeyCode(), false);
-
-               if(this.event.get(KeyEvent.VK_UP))
-               {
-                  speed[0] += 50;
-                  speed[1] += 50;
-               }
-               
-               if(this.event.get(KeyEvent.VK_DOWN))
-               {
-                  speed[0] -= 50;
-                  speed[1] -= 50;
-               }
-               
-               if(this.event.get(KeyEvent.VK_RIGHT))
-               {
-                  speed[0] += 25;
-                  speed[1] -= 25;
-               }
-               
-               if(this.event.get(KeyEvent.VK_LEFT))
-               {
-                  speed[0] -= 25;
-                  speed[1] += 25;
-               }
-               
-               //this.output.println("robot-control " + speed[0] + "  " + speed[1]);
-               System.out.println("robot-control " + speed[0] + "  " + speed[1]);
-               repaint();
+               sendCommand();
             }
          }
       }
@@ -183,11 +191,11 @@ public class RobotClient
 
    private static class Picture extends JComponent
    {
-      private State state;
+      private HashMap<Integer, Boolean> event;
 
-      public Picture()
+      public Picture(HashMap<Integer, Boolean> event)
       {
-         state = State.IDLE;
+         this.event = event;
       }
 
       public void paintComponent(Graphics g)
@@ -199,43 +207,33 @@ public class RobotClient
          yMid = SIZE / 2;
          
          super.paintComponent(g);
+            g.setColor(Color.BLUE);
+         
+         if(this.event.get(KeyEvent.VK_UP))
+         {
+            g.fillRoundRect(xMid - 50, yMid - 105, 100, 100, 25, 25);
+         }
+         
+         if(this.event.get(KeyEvent.VK_DOWN))
+         {
+            g.fillRoundRect(xMid - 50, yMid, 100, 100, 25, 25);
+         }
+         
+         if(this.event.get(KeyEvent.VK_RIGHT))
+         {
+            g.fillRoundRect(xMid + 55, yMid, 100, 100, 25, 25);
+         }
+         
+         if(this.event.get(KeyEvent.VK_LEFT))
+         {
+            g.fillRoundRect(xMid - 155, yMid, 100, 100, 25, 25);
+         }
          
          g.setColor(Color.BLACK);
          g.drawRoundRect(xMid - 50, yMid - 105, 100, 100, 25, 25);
          g.drawRoundRect(xMid - 50, yMid, 100, 100, 25, 25);
-         g.drawRoundRect(xMid - 155, yMid, 100, 100, 25, 25);
          g.drawRoundRect(xMid + 55, yMid, 100, 100, 25, 25);
-
-         switch(this.state)
-         {
-            case STOP:
-               this.state = State.IDLE;
-               break;
-
-            case FORWARD:
-               this.state = State.RUNNING;
-               g.setColor(Color.BLUE);
-               g.fillRoundRect(xMid - 50, yMid - 105, 100, 100, 25, 25);
-               break;
-
-            case BACKWARD:
-               this.state = State.RUNNING;
-               g.setColor(Color.BLUE);
-               g.fillRoundRect(xMid - 50, yMid, 100, 100, 25, 25);
-               break;
-
-            case RIGHT:
-               this.state = State.RUNNING;
-               g.setColor(Color.BLUE);
-               g.fillRoundRect(xMid + 55, yMid, 100, 100, 25, 25);
-               break;
-
-            case LEFT:
-               this.state = State.RUNNING;
-               g.setColor(Color.BLUE);
-               g.fillRoundRect(xMid - 155, yMid, 100, 100, 25, 25);
-               break;
-         }
+         g.drawRoundRect(xMid - 155, yMid, 100, 100, 25, 25);
       }
    }
 }
