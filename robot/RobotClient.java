@@ -46,6 +46,7 @@ public class RobotClient
 
       public Window(String ip)
       {
+         /*
          try
          {
             System.out.println("connecting to address " + ip + " on port " + PORT + "...");
@@ -58,6 +59,7 @@ public class RobotClient
             System.err.println("ERROR: failed to open socket connection");
             System.exit(1);
          }
+         */
 
          this.gui = new Picture();
          this.event = new HashMap<Integer, Boolean>();
@@ -78,8 +80,10 @@ public class RobotClient
 
          if(input.getKeyCode() == KeyEvent.VK_ESCAPE)
          {
-            this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+            //this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+            System.out.println("robot-control " + speed[0] + "  " + speed[1]);
             
+            /*
             try
             {
                System.out.println("closing socket connection...");
@@ -92,6 +96,7 @@ public class RobotClient
                System.err.println("ERROR: failed to close socket connection");
                System.exit(1);
             }
+            */
             
             System.exit(0);
          }
@@ -125,7 +130,8 @@ public class RobotClient
                   speed[1] += 25;
                }
                
-               this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+               //this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+               System.out.println("robot-control " + speed[0] + "  " + speed[1]);
                repaint();
             }
          }
@@ -165,7 +171,8 @@ public class RobotClient
                   speed[1] += 25;
                }
                
-               this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+               //this.output.println("robot-control " + speed[0] + "  " + speed[1]);
+               System.out.println("robot-control " + speed[0] + "  " + speed[1]);
                repaint();
             }
          }

@@ -4,11 +4,11 @@
 #include "xparameters.h"
 #include "xil_io.h"
 
-#define PWM_PERIOD_NS	20000000
-#define CLK_PERIOD_NS	10
+#define PWM_PERIOD_NS 20000000
+#define CLK_PERIOD_NS 10
 
-#define MAX_DUTY_CYCLE 	100
-#define MIN_DUTY_CYCLE	0
+#define MAX_DUTY_CYCLE 100
+#define MIN_DUTY_CYCLE 0
 
 typedef enum
 {

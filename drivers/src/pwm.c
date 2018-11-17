@@ -29,14 +29,12 @@ void pwm_set(pwm_channel_t ch, uint8_t duty_cycle)
 {
 	if(duty_cycle >= MAX_DUTY_CYCLE)
 	{
-		Xil_Out32(ch + 0x14, (0 / CLK_PERIOD_NS) - 2);
-	}
+	   duty_cycle = MIN_DUTY_CYCLE;
+   }
 	else if(duty_cycle == MIN_DUTY_CYCLE)
 	{
-		Xil_Out32(ch + 0x14, (PWM_PERIOD_NS / CLK_PERIOD_NS) - 2);
-	}
-	else
-	{
-		Xil_Out32(ch + 0x14, (duty_cycle * PWM_PERIOD_NS / CLK_PERIOD_NS / 100) - 2);
-	}
+	   duty_cycle = MAX_DUTY_CYCLE;
+   }
+   
+   Xil_Out32(ch + 0x14, (duty_cycle * PWM_PERIOD_NS / CLK_PERIOD_NS / 100) - 2);
 }
