@@ -51,6 +51,7 @@ public class RobotClient
       private HashMap<Integer, Boolean> event;
       private ArrayList<Integer> data;
       private Picture gui;
+      private int offset;
 
       public Window(String ip)
       {
@@ -63,6 +64,10 @@ public class RobotClient
             this.in.readLine();
             this.in.readLine();
             this.in.readLine();
+            System.out.println("robot-distance");
+            this.out.println("robot-distance");
+            this.offset = Integer.parseInt(this.in.readLine().substring(1));
+            this.in.readLine();
             System.out.println("socket connection established");
          }
          catch(IOException e)
@@ -70,18 +75,19 @@ public class RobotClient
             System.err.println("ERROR: failed to open socket connection");
             System.exit(1);
          }
-
+         
          this.event = new HashMap<Integer, Boolean>();
+         this.data = new ArrayList<Integer>();
+         this.gui = new Picture(event, data);
+         
          this.event.put(KeyEvent.VK_UP, false);
          this.event.put(KeyEvent.VK_DOWN, false);
          this.event.put(KeyEvent.VK_RIGHT, false);
          this.event.put(KeyEvent.VK_LEFT, false);
-         
-         this.data = new ArrayList<Integer>();
-         this.data.add(0, 0);
-         this.data.add(1, 0);
+         this.event.put(KeyEvent.VK_SPACE, false);
+         this.data.add(0);
+         this.data.add(0);
 
-         this.gui = new Picture(event, data);
 
          addKeyListener(this);
          setFocusable(true);
@@ -150,6 +156,7 @@ public class RobotClient
          
          try
          {
+            System.out.println("robot-control " + speed[0] + "  " + speed[1]);
             this.out.println("robot-control " + speed[0] + "  " + speed[1]);
             this.in.readLine();
          }
@@ -158,15 +165,15 @@ public class RobotClient
             System.err.println("ERROR: I/O error occurred");
             System.exit(1);
          }
-
       }
 
       public void sendDistanceCommand()
-      {
+      {  
          try
          {
+            System.out.println("robot-distance");
             this.out.println("robot-distance");
-            this.data.add(0, Integer.parseInt(this.in.readLine().substring(1)));
+            this.data.set(0, Integer.parseInt(this.in.readLine().substring(1)) - this.offset);
             this.in.readLine();
          }
          catch(IOException e)
@@ -180,9 +187,13 @@ public class RobotClient
       {
          try
          {
-            this.out.println("robot-scan");
-            this.data.add(1, Integer.parseInt(this.in.readLine().substring(1)));
-            this.in.readLine();
+            if(this.event.get(KeyEvent.VK_SPACE))
+            {
+               System.out.println("robot-scan");
+               this.out.println("robot-scan");
+               this.data.set(1, Integer.parseInt(this.in.readLine().substring(1)));
+               this.in.readLine();
+            }
          }
          catch(IOException e)
          {
@@ -199,6 +210,7 @@ public class RobotClient
             this.event.put(KeyEvent.VK_DOWN, false);
             this.event.put(KeyEvent.VK_RIGHT, false);
             this.event.put(KeyEvent.VK_LEFT, false);
+            this.event.put(KeyEvent.VK_SPACE, false);
             sendControlCommand();
             
             try
@@ -223,10 +235,10 @@ public class RobotClient
             {
                this.event.put(input.getKeyCode(), true);
                sendControlCommand();
+               sendScanCommand();
             }
          }
 
-         sendDistanceCommand();
          repaint();
       }
    
@@ -238,10 +250,10 @@ public class RobotClient
             {
                this.event.put(input.getKeyCode(), false);
                sendControlCommand();
+               sendDistanceCommand();
             }
          }
          
-         sendDistanceCommand();
          repaint();
       }
 
@@ -266,10 +278,11 @@ public class RobotClient
          
          xMid = SIZE / 2;
          yMid = SIZE / 2;
-         
+
          super.paintComponent(g);
          g.setColor(Color.BLUE);
-         g.drawString("ODOMETER: " + data.get(0) + "mm", 0, 10);
+         g.drawString("ODOMETER: " + (data.get(0) / 1000) + "." + (data.get(0) % 1000) + "m", 0, 25);
+         g.drawString("RANGEFINDER: " + (data.get(1) / 1000) + "." + (data.get(1) % 1000) + "m", 0, 50);
 
          if(this.event.get(KeyEvent.VK_UP))
          {
