@@ -10,7 +10,7 @@ void gpio_init(XGpio *gpio, gpio_device_t id)
 
 	switch(id)
 	{
-		case GPIO_DEVICE_O:
+		case GPIO_DEVICE_0:
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_1, 0xFFFFFFFF);
 			XGpio_SetDataDirection(gpio, GPIO_CHANNEL_2, 0x00000000);
 			XGpio_DiscreteWrite(gpio, GPIO_CHANNEL_2, 0x00000000);

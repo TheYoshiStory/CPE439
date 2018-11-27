@@ -3,8 +3,8 @@
 
 #include "pwm.h"
 
-#define MAX_SPEED	100
-#define MIN_SPEED	0
+#define MAX_SPEED 100
+#define MIN_SPEED 0
 
 void motor_init();
 

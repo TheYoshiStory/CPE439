@@ -8,8 +8,6 @@
 
 int main()
 {
-	uint32_t data[2];
-
 	init_platform();
 
 	motor_init();
@@ -20,13 +18,8 @@ int main()
 
 	while(1)
 	{
-		data[0] = odometer_read();
-		data[1] = rangefinder_read();
-
-		printf("ODOMETER: %lumm\n", data[0]);
-		printf("RANGEFINDER: %lumm\n\n", data[1]);
-
-		sleep(1);
+		printf("RANGEFINDER: %lumm\n\n\n", rangefinder_read());
+		usleep(100000);
 	}
 
 	cleanup_platform();

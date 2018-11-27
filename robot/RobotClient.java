@@ -1,13 +1,16 @@
 import java.lang.Math;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
@@ -43,8 +46,10 @@ public class RobotClient
    private static class Window extends JFrame implements KeyListener
    {
       private Socket socket;
-      private PrintWriter output;
+      private PrintWriter out;
+      private BufferedReader in;
       private HashMap<Integer, Boolean> event;
+      private ArrayList<Integer> data;
       private Picture gui;
 
       public Window(String ip)
@@ -53,7 +58,11 @@ public class RobotClient
          {
             System.out.println("connecting to address " + ip + " on port " + PORT + "...");
             this.socket = new Socket(ip, PORT);
-            this.output = new PrintWriter(this.socket.getOutputStream(), true);
+            this.out = new PrintWriter(this.socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.in.readLine();
+            this.in.readLine();
+            this.in.readLine();
             System.out.println("socket connection established");
          }
          catch(IOException e)
@@ -68,14 +77,18 @@ public class RobotClient
          this.event.put(KeyEvent.VK_RIGHT, false);
          this.event.put(KeyEvent.VK_LEFT, false);
          
-         this.gui = new Picture(event);
+         this.data = new ArrayList<Integer>();
+         this.data.add(0, 0);
+         this.data.add(1, 0);
+
+         this.gui = new Picture(event, data);
 
          addKeyListener(this);
          setFocusable(true);
          setFocusTraversalKeysEnabled(false);
       }
 
-      public void sendCommand()
+      public void sendControlCommand()
       {
          boolean up;
          boolean down;
@@ -106,8 +119,8 @@ public class RobotClient
          }
          else if(!up && down && right && !left)
          {
-            speed[0] = MID_SPEED * -1;
-            speed[1] = LOW_SPEED * -1;
+            speed[0] = LOW_SPEED * -1;
+            speed[1] = MID_SPEED * -1;
          }
          else if((!up && down && !right && !left) || (!up && down && right && left))
          {
@@ -116,8 +129,8 @@ public class RobotClient
          }
          else if(!up && down && !right && left)
          {
-            speed[0] = LOW_SPEED * -1;
-            speed[1] = MID_SPEED * -1;
+            speed[0] = MID_SPEED * -1;
+            speed[1] = LOW_SPEED * -1;
          }
          else if((!up && !down && !right && left) || (up && down && !right && left))
          {
@@ -135,10 +148,49 @@ public class RobotClient
             speed[1] = STOP_SPEED;
          }
          
-         this.output.println("robot-control " + speed[0] + "  " + speed[1]);
-         repaint();
+         try
+         {
+            this.out.println("robot-control " + speed[0] + "  " + speed[1]);
+            this.in.readLine();
+         }
+         catch(IOException e)
+         {
+            System.err.println("ERROR: I/O error occurred");
+            System.exit(1);
+         }
+
+      }
+
+      public void sendDistanceCommand()
+      {
+         try
+         {
+            this.out.println("robot-distance");
+            this.data.add(0, Integer.parseInt(this.in.readLine().substring(1)));
+            this.in.readLine();
+         }
+         catch(IOException e)
+         {
+            System.err.println("ERROR: I/O error occurred");
+            System.exit(1);
+         }
       }
       
+      public void sendScanCommand()
+      {
+         try
+         {
+            this.out.println("robot-scan");
+            this.data.add(1, Integer.parseInt(this.in.readLine().substring(1)));
+            this.in.readLine();
+         }
+         catch(IOException e)
+         {
+            System.err.println("ERROR: I/O error occurred");
+            System.exit(1);
+         }
+      }
+
       public void keyPressed(KeyEvent input)
       {
          if(input.getKeyCode() == KeyEvent.VK_ESCAPE)
@@ -147,13 +199,14 @@ public class RobotClient
             this.event.put(KeyEvent.VK_DOWN, false);
             this.event.put(KeyEvent.VK_RIGHT, false);
             this.event.put(KeyEvent.VK_LEFT, false);
-            sendCommand();
+            sendControlCommand();
             
             try
             {
                System.out.println("closing socket connection...");
                this.socket.close();
-               this.output.close();
+               this.out.close();
+               this.in.close();
                System.out.println("socket connection closed");
             }
             catch(IOException e)
@@ -169,9 +222,12 @@ public class RobotClient
             if(!this.event.get(input.getKeyCode()))
             {
                this.event.put(input.getKeyCode(), true);
-               sendCommand();
+               sendControlCommand();
             }
          }
+
+         sendDistanceCommand();
+         repaint();
       }
    
       public void keyReleased(KeyEvent input)
@@ -181,9 +237,12 @@ public class RobotClient
             if(this.event.get(input.getKeyCode()))
             {
                this.event.put(input.getKeyCode(), false);
-               sendCommand();
+               sendControlCommand();
             }
          }
+         
+         sendDistanceCommand();
+         repaint();
       }
 
       public void keyTyped(KeyEvent input){}
@@ -192,10 +251,12 @@ public class RobotClient
    private static class Picture extends JComponent
    {
       private HashMap<Integer, Boolean> event;
+      private ArrayList<Integer> data;
 
-      public Picture(HashMap<Integer, Boolean> event)
+      public Picture(HashMap<Integer, Boolean> event, ArrayList<Integer> data)
       {
          this.event = event;
+         this.data = data;
       }
 
       public void paintComponent(Graphics g)
@@ -207,8 +268,9 @@ public class RobotClient
          yMid = SIZE / 2;
          
          super.paintComponent(g);
-            g.setColor(Color.BLUE);
-         
+         g.setColor(Color.BLUE);
+         g.drawString("ODOMETER: " + data.get(0) + "mm", 0, 10);
+
          if(this.event.get(KeyEvent.VK_UP))
          {
             g.fillRoundRect(xMid - 50, yMid - 105, 100, 100, 25, 25);
