@@ -84,10 +84,7 @@ public class RobotClient
          this.event.put(KeyEvent.VK_DOWN, false);
          this.event.put(KeyEvent.VK_RIGHT, false);
          this.event.put(KeyEvent.VK_LEFT, false);
-         this.event.put(KeyEvent.VK_SPACE, false);
          this.data.add(0);
-         this.data.add(0);
-
 
          addKeyListener(this);
          setFocusable(true);
@@ -182,25 +179,6 @@ public class RobotClient
             System.exit(1);
          }
       }
-      
-      public void sendScanCommand()
-      {
-         try
-         {
-            if(this.event.get(KeyEvent.VK_SPACE))
-            {
-               System.out.println("robot-scan");
-               this.out.println("robot-scan");
-               this.data.set(1, Integer.parseInt(this.in.readLine().substring(1)));
-               this.in.readLine();
-            }
-         }
-         catch(IOException e)
-         {
-            System.err.println("ERROR: I/O error occurred");
-            System.exit(1);
-         }
-      }
 
       public void keyPressed(KeyEvent input)
       {
@@ -210,7 +188,6 @@ public class RobotClient
             this.event.put(KeyEvent.VK_DOWN, false);
             this.event.put(KeyEvent.VK_RIGHT, false);
             this.event.put(KeyEvent.VK_LEFT, false);
-            this.event.put(KeyEvent.VK_SPACE, false);
             sendControlCommand();
             
             try
@@ -235,7 +212,6 @@ public class RobotClient
             {
                this.event.put(input.getKeyCode(), true);
                sendControlCommand();
-               sendScanCommand();
             }
          }
 
@@ -281,8 +257,7 @@ public class RobotClient
 
          super.paintComponent(g);
          g.setColor(Color.BLUE);
-         g.drawString("ODOMETER: " + (data.get(0) / 1000) + "." + (data.get(0) % 1000) + "m", 0, 25);
-         g.drawString("RANGEFINDER: " + (data.get(1) / 1000) + "." + (data.get(1) % 1000) + "m", 0, 50);
+         g.drawString("ODOMETER: " + String.format("%d", data.get(0) / 1000) + "." + String.format("%03d", data.get(0) % 1000)+ "m", 5, SIZE - 10);
 
          if(this.event.get(KeyEvent.VK_UP))
          {

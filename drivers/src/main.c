@@ -7,6 +7,8 @@
 
 int main()
 {
+	uint32_t data;
+
 	init_platform();
 
 	motor_init();
@@ -17,8 +19,9 @@ int main()
 
 	while(1)
 	{
-		printf("RANGEFINDER: %lumm\n\n\n\n", rangefinder_read());
 		usleep(10000);
+		data = rangefinder_read();
+		printf("RANGEFINDER: %lumm\n\n\n\n", data);
 	}
 
 	cleanup_platform();
