@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include "platform.h"
-#include "sleep.h"
 #include "motor.h"
 #include "odometer.h"
 #include "rangefinder.h"
@@ -18,8 +17,8 @@ int main()
 
 	while(1)
 	{
-		printf("RANGEFINDER: %lumm\n\n\n", rangefinder_read());
-		usleep(100000);
+		printf("RANGEFINDER: %lumm\n\n\n\n", rangefinder_read());
+		usleep(10000);
 	}
 
 	cleanup_platform();

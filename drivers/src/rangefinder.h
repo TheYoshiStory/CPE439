@@ -1,12 +1,13 @@
 #ifndef RANGEFINDER_H
 #define RANGEFINDER_H
 
+#include "sleep.h"
 #include "gpio.h"
 
 #define CLK_FREQ_HZ 100000000
 #define SOUND_SPEED_MPS 343
 
-#define MAX_AVERAGE 15
+#define MAX_AVERAGE 64
 #define MIN_AVERAGE 1
 
 #define SW_MASK 0x0000000F
