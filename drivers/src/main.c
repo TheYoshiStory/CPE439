@@ -19,7 +19,7 @@ int main()
 
 	while(1)
 	{
-		usleep(10000);
+		usleep(100000);
 		data = rangefinder_read();
 		printf("RANGEFINDER: %lumm\n\n\n\n", data);
 	}

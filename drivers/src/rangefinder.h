@@ -5,10 +5,11 @@
 
 #define CLK_FREQ_HZ 100000000
 #define SOUND_SPEED_MPS 343
-#define AVG_SCALE 4
 
 #define SW_MASK 0x0000000F
 #define LED_MASK 0x0000000F
+#define ALPHA 7
+#define MAX_DISTANCE 250
 
 void rangefinder_init();
 
