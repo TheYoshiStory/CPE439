@@ -18,10 +18,10 @@ public class RobotClient
 {
    private static final int PORT = 23;
    private static final int SIZE = 500;
-   private static final int HIGH_SPEED = 75;
-   private static final int MID_SPEED = 50;
+   private static final int HIGH_SPEED = 50;
    private static final int LOW_SPEED = 25;
    private static final int STOP_SPEED = 0;
+   private static final int MAX_RANGE = 10000;
 
    public static void main(String[] args)
    {
@@ -85,6 +85,8 @@ public class RobotClient
          this.event.put(KeyEvent.VK_RIGHT, false);
          this.event.put(KeyEvent.VK_LEFT, false);
          this.data.add(0);
+         this.data.add(0);
+         this.data.add(0);
 
          addKeyListener(this);
          setFocusable(true);
@@ -107,43 +109,43 @@ public class RobotClient
 
          if((up && !down && !right && !left) || (up && !down && right && left))
          {
-            speed[0] = MID_SPEED;
-            speed[1] = MID_SPEED;
+            speed[0] = HIGH_SPEED;
+            speed[1] = HIGH_SPEED;
          }
          else if(up && !down && right && !left)
          {
-            speed[0] = MID_SPEED;
+            speed[0] = HIGH_SPEED;
             speed[1] = LOW_SPEED;
          }
          else if((!up && !down && right && !left) || (up && down && right && !left))
          {
-            speed[0] = MID_SPEED;
-            speed[1] = MID_SPEED * -1;
+            speed[0] = HIGH_SPEED;
+            speed[1] = HIGH_SPEED * -1;
          }
          else if(!up && down && right && !left)
          {
             speed[0] = LOW_SPEED * -1;
-            speed[1] = MID_SPEED * -1;
+            speed[1] = HIGH_SPEED * -1;
          }
          else if((!up && down && !right && !left) || (!up && down && right && left))
          {
-            speed[0] = MID_SPEED * -1;
-            speed[1] = MID_SPEED * -1;
+            speed[0] = HIGH_SPEED * -1;
+            speed[1] = HIGH_SPEED * -1;
          }
          else if(!up && down && !right && left)
          {
-            speed[0] = MID_SPEED * -1;
+            speed[0] = HIGH_SPEED * -1;
             speed[1] = LOW_SPEED * -1;
          }
          else if((!up && !down && !right && left) || (up && down && !right && left))
          {
-            speed[0] = MID_SPEED * -1;
-            speed[1] = MID_SPEED;
+            speed[0] = HIGH_SPEED * -1;
+            speed[1] = HIGH_SPEED;
          }
          else if(up && !down && !right && left)
          {
             speed[0] = LOW_SPEED;
-            speed[1] = MID_SPEED;
+            speed[1] = HIGH_SPEED;
          }
          else
          {
@@ -151,9 +153,11 @@ public class RobotClient
             speed[1] = STOP_SPEED;
          }
          
+         this.data.set(1, speed[0]);
+         this.data.set(2, speed[1]);
+         
          try
          {
-            System.out.println("robot-control " + speed[0] + "  " + speed[1]);
             this.out.println("robot-control " + speed[0] + "  " + speed[1]);
             this.in.readLine();
          }
@@ -168,7 +172,6 @@ public class RobotClient
       {  
          try
          {
-            System.out.println("robot-distance");
             this.out.println("robot-distance");
             this.data.set(0, Integer.parseInt(this.in.readLine().substring(1)) - this.offset);
             this.in.readLine();
@@ -251,39 +254,148 @@ public class RobotClient
       {
          int xMid;
          int yMid;
+         int distance;
+         int left;
+         int right;
+         
+         super.paintComponent(g);
          
          xMid = SIZE / 2;
          yMid = SIZE / 2;
+         distance = data.get(0);
+         left = data.get(1);
+         right = data.get(2);
 
-         super.paintComponent(g);
          g.setColor(Color.BLUE);
-         g.drawString("ODOMETER: " + String.format("%d", data.get(0) / 1000) + "." + String.format("%03d", data.get(0) % 1000)+ "m", 5, SIZE - 10);
 
          if(this.event.get(KeyEvent.VK_UP))
          {
-            g.fillRoundRect(xMid - 50, yMid - 105, 100, 100, 25, 25);
+            g.fillRoundRect(xMid - 50, yMid - 5, 100, 100, 25, 25);
          }
          
          if(this.event.get(KeyEvent.VK_DOWN))
          {
-            g.fillRoundRect(xMid - 50, yMid, 100, 100, 25, 25);
+            g.fillRoundRect(xMid - 50, yMid + 100, 100, 100, 25, 25);
          }
          
          if(this.event.get(KeyEvent.VK_RIGHT))
          {
-            g.fillRoundRect(xMid + 55, yMid, 100, 100, 25, 25);
+            g.fillRoundRect(xMid + 55, yMid + 100, 100, 100, 25, 25);
          }
          
          if(this.event.get(KeyEvent.VK_LEFT))
          {
-            g.fillRoundRect(xMid - 155, yMid, 100, 100, 25, 25);
+            g.fillRoundRect(xMid - 155, yMid + 100, 100, 100, 25, 25);
          }
          
+         g.setColor(Color.GREEN);
+
+         if(distance > MAX_RANGE)
+         {
+            g.fillRect(xMid - 175, yMid - 180, 75, 25);
+         }
+
+         if(distance > MAX_RANGE * 0.8)
+         {
+            g.fillRect(xMid - 175, yMid - 155, 75, 25);
+         }
+
+         if(distance > MAX_RANGE * 0.6)
+         {
+            g.fillRect(xMid - 175, yMid - 130, 75, 25);
+         }
+
+         if(distance > MAX_RANGE * 0.4)
+         {
+            g.fillRect(xMid - 175, yMid - 105, 75, 25);
+         }
+
+         if(distance > MAX_RANGE * 0.2)
+         {
+            g.fillRect(xMid - 175, yMid - 80, 75, 25);
+         }
+
+         g.setColor(Color.YELLOW);
+         g.fillRect(xMid + 100, yMid - 130, 50, 25);
+         g.fillRect(xMid + 170, yMid - 130, 50, 25);
+
+         switch(left)
+         {
+            case HIGH_SPEED:
+               g.setColor(Color.RED);
+               g.fillRect(xMid + 100, yMid - 180, 50, 25);
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 100, yMid - 155, 50, 25);
+               break;
+            
+            case LOW_SPEED:
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 100, yMid - 155, 50, 25);
+               break;
+         
+            case LOW_SPEED * -1:
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 100, yMid - 105, 50, 25);
+               break;
+            
+            case HIGH_SPEED * -1:
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 100, yMid - 105, 50, 25);
+               g.setColor(Color.RED);
+               g.fillRect(xMid + 100, yMid - 80, 50, 25);
+               break;
+         }
+         
+         switch(right)
+         {
+            case HIGH_SPEED:
+               g.setColor(Color.RED);
+               g.fillRect(xMid + 170, yMid - 180, 50, 25);
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 170, yMid - 155, 50, 25);
+               break;
+            
+            case LOW_SPEED:
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 170, yMid - 155, 50, 25);
+               break;
+         
+            case LOW_SPEED * -1:
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 170, yMid - 105, 50, 25);
+               break;
+            
+            case HIGH_SPEED * -1:
+               g.setColor(Color.ORANGE);
+               g.fillRect(xMid + 170, yMid - 105, 50, 25);
+               g.setColor(Color.RED);
+               g.fillRect(xMid + 170, yMid - 80, 50, 25);
+               break;
+         }
+
          g.setColor(Color.BLACK);
-         g.drawRoundRect(xMid - 50, yMid - 105, 100, 100, 25, 25);
-         g.drawRoundRect(xMid - 50, yMid, 100, 100, 25, 25);
-         g.drawRoundRect(xMid + 55, yMid, 100, 100, 25, 25);
-         g.drawRoundRect(xMid - 155, yMid, 100, 100, 25, 25);
+         g.drawRoundRect(xMid - 50, yMid - 5, 100, 100, 25, 25);
+         g.drawRoundRect(xMid - 50, yMid + 100, 100, 100, 25, 25);
+         g.drawRoundRect(xMid + 55, yMid + 100, 100, 100, 25, 25);
+         g.drawRoundRect(xMid - 155, yMid + 100, 100, 100, 25, 25);
+         g.drawString("DISTANCE", xMid - 166, yMid - 185);
+         g.drawRect(xMid - 175, yMid - 180, 75, 25);
+         g.drawRect(xMid - 175, yMid - 155, 75, 25);
+         g.drawRect(xMid - 175, yMid - 130, 75, 25);
+         g.drawRect(xMid - 175, yMid - 105, 75, 25);
+         g.drawRect(xMid - 175, yMid - 80, 75, 25);
+         g.drawString("LEFT", xMid + 110, yMid - 185);
+         g.drawRect(xMid + 100, yMid - 180, 50, 25);
+         g.drawRect(xMid + 100, yMid - 155, 50, 25);
+         g.drawRect(xMid + 100, yMid - 130, 50, 25);
+         g.drawRect(xMid + 100, yMid - 105, 50, 25);
+         g.drawRect(xMid + 100, yMid - 80, 50, 25);
+         g.drawString("RIGHT", xMid + 177, yMid - 185);
+         g.drawRect(xMid + 170, yMid - 180, 50, 25);
+         g.drawRect(xMid + 170, yMid - 155, 50, 25);
+         g.drawRect(xMid + 170, yMid - 130, 50, 25);
+         g.drawRect(xMid + 170, yMid - 105, 50, 25);
+         g.drawRect(xMid + 170, yMid - 80, 50, 25);
       }
    }
 }
