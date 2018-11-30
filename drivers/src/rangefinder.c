@@ -64,7 +64,14 @@ uint32_t rangefinder_read()
 	}
 	else
 	{
-		data[1] = ((data[1] & 0xF) | 0x7) ^ 0x08;
+		if(data[1])
+		{
+			data[1] = 0x0;
+		}
+		else
+		{
+			data[1] = 0xF;
+		}
 	}
 
 	gpio_write(&setting, GPIO_CHANNEL_2, data[1] & LED_MASK);
