@@ -4,7 +4,7 @@
 void motor_init()
 {
 	pwm_init();
-	motor_control(0, 0);
+	motor_control(MIN_SPEED, MIN_SPEED);
 }
 
 // control motors
